@@ -1,0 +1,38 @@
+name: Data Preprocessing Workflow
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Python 3.12.7
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12.7'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pandas scikit-learn numpy
+
+    - name: Run preprocessing script
+      run: |
+        python preprocessing/automate_Nicky.py
+
+    - name: Commit and Push Processed Data
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add preprocessing/dataset_preprocessing/
+        # Supaya tidak error kalau tidak ada perubahan
+        git diff-index --quiet HEAD || git commit -m "Auto-update processed dataset"
+        git push
